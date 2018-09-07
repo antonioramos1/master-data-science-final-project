@@ -4,79 +4,56 @@ import sys
 import shutil
 from tqdm import tqdm
 
-def extract_train_val_test(category):
-    dataset_path = "../photos_resized" #modify paths accordingly
-    customer_df = pd.read_csv("../notebooks/customer_df.csv")
-    retrieval_df = pd.read_csv("../notebooks/retrieval_df.csv")
+def extract_train_val_test(category, ratio, sampling=None):
+    customer_df = pd.read_csv("./customer_df.csv") #modify paths accordingly
+    retrieval_df = pd.read_csv("./retrieval_df.csv")
 
-    available_categories = customer_df["category"].unique()
-    assert category in available_categories, print("Please use a valid category: {}".format(" ".join(available_categories)))
+    avail_categories = customer_df["category"].unique()
+    assert category in avail_categories, print("Please use a valid category: {}".format(" ".join(avail_categories)))
 
-    customer_category = customer_df[customer_df["category"] == category]
-    retrieval_category = retrieval_df[retrieval_df["category"] == category]
+    
+    customer_df = customer_df[customer_df["category"] == category] #filter by category
+    retrieval_df = retrieval_df[retrieval_df["category"] == category]
 
-    split = int(len(customer_category['id'].unique())*0.5)
-    ids_val = customer_category['id'].unique()[:split].tolist()
-    ids_test = customer_category['id'].unique()[split:].tolist()
+    customer_df = customer_df.drop_duplicates(subset=["photo"]) #removing same bounding boxes to avoid bias number of matches
 
-    ids_other = []
-    for i in retrieval_category['id']:
-        if i not in ids_val and i not in ids_test:
-            ids_other.append(i)
+    merged_df = customer_df.merge(retrieval_df, how="inner", on="id", suffixes=("_cust", "_retr")) #these are how many all:all matches are available
+    
+    n_ratio = int(len(merged_df)*ratio[0]) #how many photos in each test, rounding down to keep same number for both sets
+    
+    valid_df = merged_df.sample(n_ratio, random_state=2018) #randomly splits sets
+    dif_index = list((merged_df.index).difference(valid_df.index)) #difference in indices to take the remaining photos
+    test_df = merged_df.loc[dif_index[:n_ratio]] #indexing again on dif_index to ensure same number of photos in both sets
+    
+    if sampling != None:
+        valid_df = valid_df.sample(sampling, random_state=2018) #in case we want to further reduce the sets we take a sample
+        test_df = test_df.sample(sampling, random_state=2018)    
 
-    ids_other = list(set(ids_other))
-    split_others = int(len(ids_other)*0.5)
+    return valid_df, test_df
 
-    ids_val = ids_val + ids_other[:split_others]
-    ids_test = ids_test + ids_other[split_others:]
+def move_files(df, set_name, category):
+    dataset_path = "./photos_resized" #modify paths accordingly
+    photos_list_cust = df["photo_cust"].unique().tolist()
+    photos_list_cust = [str(photo) + ".jpg" for photo in photos_list_cust]
+    
+    photos_list_retr = df["photo_retr"].unique().tolist()
+    photos_list_retr = [str(photo) + ".jpg" for photo in photos_list_retr]
 
-    customer_category_val = customer_category[customer_category['id'].isin(ids_val)]
-    customer_category_test = customer_category[customer_category['id'].isin(ids_test)]
-
-    retrieval_category_val = retrieval_category[retrieval_category['id'].isin(ids_val)]
-    retrieval_category_test = retrieval_category[retrieval_category['id'].isin(ids_test)]
-
-
-    photos_list_customer_val = list(set(customer_category_val["photo"]))
-    photos_list_customer_val = [str(photo) + ".jpg" for photo in photos_list_customer_val]
-
-    photos_list_customer_test = list(set(customer_category_test["photo"]))
-    photos_list_customer_test = [str(photo) + ".jpg" for photo in photos_list_customer_test]
-
-    photos_list_retrieval_val = list(set(retrieval_category_val["photo"]))
-    photos_list_retrieval_val = [str(photo) + ".jpg" for photo in photos_list_retrieval_val]
-
-    photos_list_retrieval_test = list(set(retrieval_category_test["photo"]))
-    photos_list_retrieval_test = [str(photo) + ".jpg" for photo in photos_list_retrieval_test]
-
-
-    output_vald = "../photos_classified/" + category + "/validation/"
-    if not os.path.exists(output_vald):
-        os.makedirs(output_vald, exist_ok=True)
-        os.makedirs(output_vald + "/customer")
-        os.makedirs(output_vald + "/retrieval")
-
-    output_test = "../photos_classified/" + category + "/test/"
-    if not os.path.exists(output_test):
-        os.makedirs(output_test, exist_ok=True)
-        os.makedirs(output_test + "/customer")
-        os.makedirs(output_test + "/retrieval")
-
-    print("Creating customer validation images")
-    for photo in tqdm(photos_list_customer_val):
-        shutil.copy(os.path.join(dataset_path, photo), os.path.join(output_vald, "customer", photo))
-
-    print("Creating customer test images")
-    for photo in tqdm(photos_list_customer_test):
-        shutil.copy(os.path.join(dataset_path, photo), os.path.join(output_test, "customer", photo))
-
-    print("Creating retrieval validation images")
-    for photo in tqdm(photos_list_retrieval_val):
-        shutil.copy(os.path.join(dataset_path, photo), os.path.join(output_vald, "retrieval", photo))
-
-    print("Creating retrieval test images")
-    for photo in tqdm(photos_list_retrieval_test):
-        shutil.copy(os.path.join(dataset_path, photo), os.path.join(output_test, "retrieval", photo))
+    output_path = os.path.join(".", "photos_classified", category, set_name)
+    if not os.path.exists(output_path):
+        os.makedirs(output_path, exist_ok=True)
+        os.makedirs(os.path.join(output_path, "customer"))
+        os.makedirs(os.path.join(output_path, "retrieval"))
+        
+    print("Creating customer " + set_name + " images")
+    for photo in tqdm(photos_list_cust):
+        shutil.copy(os.path.join(dataset_path, photo), os.path.join(output_path, "customer", photo))
+        
+    print("Creating retrieval " + set_name + " images")
+    for photo in tqdm(photos_list_retr):
+        shutil.copy(os.path.join(dataset_path, photo), os.path.join(output_path, "retrieval", photo))
 
 if __name__ == "__main__":
-	extract_train_val_test(sys.argv[1])
+    valid_df, test_df = extract_train_val_test(sys.argv[1], sys.argv[2], sys.argv[3])
+    move_files(valid_df, "validation", sys.argv[1])
+    move_files(test_df, "test", sys.argv[1])
