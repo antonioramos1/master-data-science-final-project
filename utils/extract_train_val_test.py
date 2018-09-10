@@ -5,7 +5,7 @@ import sys
 import shutil
 from tqdm import tqdm
 
-def extract_train_val_test(category, ratio, sampling=None):
+def extract_train_val_test(category, ratio, sampling=None, sampling_unmatched=None):
     customer_df = pd.read_csv("../notebooks/customer_df.csv") #modify paths accordingly
     retrieval_df = pd.read_csv("../notebooks/retrieval_df.csv")
     dataset_path = "../photos_resized" #modify paths accordingly
@@ -35,11 +35,16 @@ def extract_train_val_test(category, ratio, sampling=None):
     unmatched_valid = unmatched_df[unmatched_df['photo'].isin(valid)]
     unmatched_test = unmatched_df[unmatched_df['photo'].isin(test)]
 
+    all_df = []
     if sampling != None:
-        all_df = []
-        for df in [valid_df, test_df, unmatched_valid, unmatched_test]:
+        for df in [valid_df, test_df]:
             all_df.append(df.sample(sampling, random_state=2018)) #in case we want to further reduce the sets we take a sample)
-        valid_df, test_df, unmatched_valid, unmatched_test = all_df[0], all_df[1], all_df[2], all_df[3]
+        valid_df, test_df = all_df[0], all_df[1]
+
+    if sampling_unmatched != None:
+        for df in [unmatched_valid, unmatched_test]:
+            all_df.append(df.sample(sampling_unmatched, random_state=2018)) #in case we want to further reduce the sets we take a sample)
+        unmatched_valid, unmatched_test = all_df[2], all_df[3]
 
     for step in zip([[valid_df, unmatched_valid] , [test_df, unmatched_test]], ["validation", "test"]):
         photos_list_cust = step[0][0]["photo_cust"].unique().tolist()
