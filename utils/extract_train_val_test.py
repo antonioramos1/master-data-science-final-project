@@ -28,6 +28,7 @@ def extract_train_val_test(category, ratio, sampling=None, sampling_unmatched=No
     valid_df = merged_df[merged_df['photo_cust'].isin(valid)]
     test_df = merged_df[merged_df['photo_cust'].isin(test)]
 
+    np.random.seed(2018)
     #unmatched items
     perm = np.random.permutation(unmatched_df['photo'])
     split = int(len(unmatched_df['photo'])*ratio[0])
