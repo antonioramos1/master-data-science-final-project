@@ -1,49 +1,47 @@
-from flask import Flask, render_template, request, send_from_directory
 import os
-from utils.utils import load_embeddings, EmbeddingsAll
+from flask import Flask, render_template, request, send_from_directory
+from utils.utils import load_embeddings, Recommender
 
 
 app = Flask(__name__)
 
-# load embeddings file previously created
-embs_catalogue = load_embeddings('./embeddings.csv')
-imgs_catalogue = os.listdir("./images/catalogue")
-em = EmbeddingsAll()
+embs_store = load_embeddings('./embeddings.npy') # load embeddings from previously created file
+imgs_store = os.listdir("./images/store")
+user_img = "user_img.jpg"
+user_img_path = "./images/user/" + user_img
+reco_path = "./images/recommend/"
+reco = Recommender()
 
 @app.route("/")
 @app.route("/home")
-def upload_file():
+def upload_page():
     return render_template("upload.html")
 
 @app.after_request
-def add_header(response):
+def fix_cache(response):
     """
-    Chache Fix:
-    Add headers to both force latest IE rendering engine or Chrome Frame,
+    Chache fix: Add headers to both force latest IE rendering engine or Chrome Frame,
     and also to cache the rendered page for 10 minutes.
     """
     response.headers['X-UA-Compatible'] = 'IE=Edge,chrome=1'
     response.headers['Cache-Control'] = 'public, max-age=0'
     return response
 
-# transform image uploaded
 @app.route('/upload', methods = ['POST'])
-def upload_file_2():
-    target_img = "./images/target/target_image.jpg"
-    recomd_path = "./images/recommend/"
+def upload_image():
     f = request.files['file']
-    f.save(target_img) #saves uploaded image
-    top_n = 5 #change to return more than 5 recommendations
-    em.top_similar(target_img, recomd_path, embs_catalogue, imgs_catalogue, top_n)
+    f.save(user_img_path) #saves uploaded image
+    
+    top_n = 12
+    reco.recommend_user(user_img_path, embs_store, imgs_store, top_n) #will save in the recommend folder the top_n most similar images
 
-    target_img = target_img.split("/")[-1]  #name of target image
-    recomd_names = os.listdir(recomd_path) #name of recommended images
-    return render_template("gallery.html", target_image=target_img, image_names=recomd_names)
+    reco_names = os.listdir(reco_path) #name of recommended images
+    return render_template("gallery.html", target_image=user_img, image_names=reco_names)
 
 @app.route('/upload/<filename>')
 def send_image(filename):
-    if filename == "target_image.jpg":
-        return send_from_directory("images/target", filename)
+    if filename == user_img:
+        return send_from_directory("images/user", filename)
     else:
         return send_from_directory("images/recommend", filename)
 
