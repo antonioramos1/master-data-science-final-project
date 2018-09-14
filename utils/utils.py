@@ -14,10 +14,7 @@ def load_embeddings(full_path_file):
     
 class Recommender:
     def __init__(self):
-        base_model = ResNet50(weights="imagenet", include_top=False, pooling="avg")
-        self.model = Model(inputs=base_model.input, outputs=base_model.output)
-        # Bug fix for async not working, see: https://github.com/keras-team/keras/issues/2397
-        #self.model._make_predict_function() #Do we need this line?
+        self.model = ResNet50(weights="imagenet", include_top=False, pooling="avg")
 
     def recommend_user(self, user_img, embs_store, imgs_store, top_n, method="cosine"):
         img_array = plt.imread(user_img)
