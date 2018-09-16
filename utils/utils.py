@@ -31,6 +31,6 @@ class Recommender:
         rank = np.argsort(distance.ravel()) #ranks by similarity, returns the indices that would sort the imgs_store list
         
         for n, i in enumerate(rank[:top_n]): #uses rank to select the similar images from the catalogue
-            store_path = os.path.join(".", "images", "store", imgs_store[i])
-            recommend_path = os.path.join(".", "images", "recommend", str(n)+".jpg")
+            store_path = os.path.join(".", "static", "images", "store", imgs_store[i])
+            recommend_path = os.path.join(".", "static", "images", "recommend", str(n)+".jpg")
             shutil.copyfile(store_path, recommend_path)
