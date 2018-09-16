@@ -25,4 +25,4 @@ def save_embeddings(dataset_path, resize=(250,250)):
     np.save("../embeddings.npy", embeddings_tensor) #npy files save/load faster than csv when working with ndarrays
 
 if __name__ == "__main__":
-    save_embeddings("../images/store") #need to avoid hardcoding this path on a future version
+    save_embeddings("../static/images/store") #need to avoid hardcoding this path on a future version
