@@ -14,11 +14,11 @@ reco = Recommender()
 @app.route("/")
 @app.route("/home")
 def upload_page():
-    return render_template("index_site.html")
+    return render_template("index.html")
 
 @app.after_request
 def fix_cache(response): #https://blog.sneawo.com/blog/2017/12/20/no-cache-headers-in-flask/
-    response.headers['Cache-Control'] = 'no-cache, no-store, must-revalidate' 
+    response.headers['Cache-Control'] = 'no-cache, no-store, must-revalidate'
     response.headers['Pragma'] = 'no-cache'
     response.headers['Expires'] = '0'
     return response
@@ -27,10 +27,10 @@ def fix_cache(response): #https://blog.sneawo.com/blog/2017/12/20/no-cache-heade
 def upload_image():
     f = request.files['file']
     f.save(user_img_path) #saves uploaded image
-    
+
     top_n = 8
     reco.recommend_user(user_img_path, embs_store, imgs_store, top_n) #will save in the recommend folder the top_n most similar images
-    return render_template("gallery_new.html")
+    return render_template("gallery.html")
 #
 if __name__ == "__main__":
     app.run(debug=False, threaded=False)
