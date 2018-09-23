@@ -31,6 +31,6 @@ def upload_image():
     top_n = 12
     reco.recommend_user(user_img_path, embs_store, imgs_store, top_n) #will save in the recommend folder the top_n most similar images
     return render_template("gallery.html")
-
+#
 if __name__ == "__main__":
     app.run(debug=False, threaded=False)
