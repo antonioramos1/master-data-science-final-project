@@ -15,4 +15,5 @@ We have also recorded a quick video demo. Check it out by clicking on the image 
 **REFERENCE**
 
 Credit to dataset owners and paper:
+
 M. Hadi Kiapour, Xufeng Han, Svetlana Lazebnik, Alexander C. Berg, Tamara L. Berg. Where to Buy It: Matching Street Clothing Photos in Online Shops. International Conference on Computer Vision (ICCV), 2015.
