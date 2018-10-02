@@ -5,7 +5,7 @@ import pandas as pd
 
 app = Flask(__name__)
 
-embs_store = load_embeddings('./embeddings.npy') # load embeddings from previously created file
+embs_store = load_embeddings('./utils/embeddings.npy') # load embeddings from previously created file
 user_img_path = "./static/images/user/user_img.jpg" 
 model = MobileNet(weights="imagenet", include_top=False, pooling="avg")
 store_database = pd.read_csv("./utils/products.csv")
