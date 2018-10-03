@@ -19,13 +19,13 @@ def read_image(img_path):
             img_array = np.array(Image.fromarray(img_array).convert("RGB"))
     return img_array
 
-def bbox_corners(img_path, df): #NEED TO CHANGE THE CUSTOMER DF; COLUMN LEFT IS ACTUALLY THE TOP COORDENATES
+def bbox_corners(img_path, df):
     """ Reads an img path, captures the photo ID (HAS TO BE UNIQUE IN THE DF) and returns the
     bounding box corners """
     
     img_id = re.split("(\\d+)", img_path)[-2]
     img_df = df[df["photo"] == int(img_id)] #assumes there are unique photo names in the df.photo
-    top, left, width, height = (int(img_df["left"]), int(img_df["top"]), int(img_df["width"]), int(img_df["height"]))
+    top, left, width, height = (int(img_df["top"]), int(img_df["left"]), int(img_df["width"]), int(img_df["height"]))
     return top, left, width, height
 
 def crop_image(img_path, customer_df, resize):
