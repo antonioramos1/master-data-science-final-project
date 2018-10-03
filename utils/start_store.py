@@ -45,8 +45,8 @@ def start_store(seed, csvs_path, dataset_path, store_path):
     
 if __name__ == "__main__":
     seed = 2018
-    csvs_path = os.path.join("..", "..")
-    dataset_path = os.path.join(".." , "..", "photos_resized")
+    csvs_path = os.path.join("..")
+    dataset_path = os.path.join("..", "photos_resized")
     store_path = os.path.join("..", "static", "images", "store")
     start_store(seed, csvs_path, dataset_path, store_path) #creating the store dataframe and placing the images on the store directory
 
