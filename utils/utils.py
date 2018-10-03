@@ -42,6 +42,13 @@ def find_paths(dataset_path):
     """ Given a path to a set of images from the dataset it returns a list with a full path to each of the images"""
     
     img_paths = os.listdir(dataset_path)
+
+    gitFile = ".gitkeep"
+    if gitFile in img_paths:  #remove git file so there are only images in the list
+        os.remove(dataset_path+gitFile)
+        img_paths.remove(gitFile)
+
+    img_paths = os.listdir(dataset_path)
     img_paths = sorted(img_paths, key = lambda x: int(re.sub("(\\D)", "", x))) #sorts numerically rather than alphabetically
     img_paths = [os.path.join(dataset_path, img) for img in img_paths]
     return img_paths

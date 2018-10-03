@@ -45,12 +45,12 @@ def start_store(seed, csvs_path, dataset_path, store_path):
     
 if __name__ == "__main__":
     seed = 2018
-    csvs_path = os.path.join("..")
+    csvs_path = os.path.join("..", "notebooks")
     dataset_path = os.path.join("..", "photos_resized")
-    store_path = os.path.join("..", "static", "images", "store")
+    store_path = os.path.join("..", "static", "images", "store", "")
     start_store(seed, csvs_path, dataset_path, store_path) #creating the store dataframe and placing the images on the store directory
 
     resizing = (224,224)
     shape_output = 1024
     model = MobileNet(input_shape=(224, 224, 3), weights="imagenet", include_top=False, pooling="avg")
-    save_embeddings(store_path, "embeddings.npy", model, preprocess_input, shape_output, resizing) #creating the embeddings file for the store images
+    save_embeddings(store_path, "embeddings.npy", model, preprocess_input, shape_output, resizing) #creating the embeddings file for the store imagescess_input, shape_output, resizing) #creating the embeddings file for the store imagescess_input, shape_output, resizing) #creating the embeddings file for the store images
