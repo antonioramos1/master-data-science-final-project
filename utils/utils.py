@@ -34,7 +34,7 @@ def crop_image(img_path, customer_df, resize):
     
     top, left, width, height = bbox_corners(img_path, customer_df)
     img_array = read_image(img_path)
-    image_cropped = img_array[left:left+height , top:top+width, :] #crops image based on bounding box coordinates
+    image_cropped = img_array[top:top+height , left:left+width, :] #crops image based on bounding box coordinates
     image_cropped = cv2.resize(image_cropped, dsize=resize, interpolation=cv2.INTER_CUBIC)
     return image_cropped
 
