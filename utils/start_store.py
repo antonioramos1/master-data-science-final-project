@@ -4,7 +4,7 @@ import pandas as pd
 import numpy as np
 from tqdm import tqdm
 from keras.applications.mobilenet import MobileNet, preprocess_input
-from utils import save_embeddings
+from utils import save_embeddings, remove_gitkeep
 
 
 def start_store(seed, csvs_path, dataset_path, store_path):
@@ -47,7 +47,12 @@ if __name__ == "__main__":
     seed = 2018
     csvs_path = os.path.join("..", "notebooks")
     dataset_path = os.path.join("..", "photos_resized")
-    store_path = os.path.join("..", "static", "images", "store", "")
+    store_path = os.path.join("..", "static", "images", "store")
+    
+    remove_gitkeep(store_path) #removes gitkeep files
+    remove_gitkeep(os.path.join(".", "static", "images", "recommend"))
+    remove_gitkeep(os.path.join(".", "static", "images", "user"))
+
     start_store(seed, csvs_path, dataset_path, store_path) #creating the store dataframe and placing the images on the store directory
 
     resizing = (224,224)

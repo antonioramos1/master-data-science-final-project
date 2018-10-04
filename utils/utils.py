@@ -38,16 +38,17 @@ def crop_image(img_path, customer_df, resize):
     image_cropped = cv2.resize(image_cropped, dsize=resize, interpolation=cv2.INTER_CUBIC)
     return image_cropped
 
-def find_paths(dataset_path):
-    """ Given a path to a set of images from the dataset it returns a list with a full path to each of the images"""
-    
-    img_paths = os.listdir(dataset_path)
+def remove_gitkeep(path):
+    img_paths = os.listdir(path)
 
     gitFile = ".gitkeep"
     if gitFile in img_paths:  #remove git file so there are only images in the list
-        os.remove(dataset_path+gitFile)
+        os.remove(path+gitFile)
         img_paths.remove(gitFile)
 
+def find_paths(dataset_path):
+    """ Given a path to a set of images from the dataset it returns a list with a full path to each of the images"""
+    remove_gitkeep(dataset_path)
     img_paths = os.listdir(dataset_path)
     img_paths = sorted(img_paths, key = lambda x: int(re.sub("(\\D)", "", x))) #sorts numerically rather than alphabetically
     img_paths = [os.path.join(dataset_path, img) for img in img_paths]
