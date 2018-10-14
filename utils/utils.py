@@ -43,8 +43,7 @@ def remove_gitkeep(path):
 
     gitFile = ".gitkeep"
     if gitFile in img_paths:  #remove git file so there are only images in the list
-        os.remove(path+gitFile)
-        img_paths.remove(gitFile)
+        os.remove(os.path.join(path, gitFile))
 
 def find_paths(dataset_path):
     """ Given a path to a set of images from the dataset it returns a list with a full path to each of the images"""
