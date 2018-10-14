@@ -10,6 +10,6 @@ Other related challenges faced here include broken URLs, rectricted access to ce
 
 The goal in the notebooks within this directory is to collect a list of URLs to all the missing images in the final set and get in touch with the dataset owners. This route has been explored however, without success.
 
-On the other hand, a final notebook solves the challenge due to the scale of the dataset by sizing it down from ~200GB to 19GB. This help us keep the dataset manageable while still preserving high quality data.
+On the other hand, a final notebook solves the challenge due to the scale of the dataset by sizing it down from ~200GB to 5GB. This help us keep the dataset manageable while still preserving high quality data.
 
 All things together, we consider this part troublesome when it comes to reproducibility therefore a reduced dataset will be provided for final evaluation on this project as well as another starting point to evaluate reproducibility.
